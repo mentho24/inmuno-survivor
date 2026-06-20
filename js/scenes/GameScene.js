@@ -524,20 +524,26 @@ class GameScene extends Phaser.Scene {
       const g = list[i];
       if (!g.active || g.kind !== "xp" || g._attracting) continue;
       const d = (g.x - enemy.x) ** 2 + (g.y - enemy.y) ** 2;
-      if (d < mergeDist2) { g.addValue(enemy.xp); this._maybeDropHeart(enemy); return; }
+      if (d < mergeDist2) { g.addValue(enemy.xp); this._maybeDropExtras(enemy); return; }
     }
     let p = this.pickups.getFirstDead(false);
     if (!p) { p = new Pickup(this); this.pickups.add(p); }
     p.spawnXp(enemy.x, enemy.y, enemy.xp);
-    this._maybeDropHeart(enemy);
+    this._maybeDropExtras(enemy);
   }
 
-  _maybeDropHeart(enemy) {
+  _maybeDropExtras(enemy) {
     // probabilidad de corazón
     if (Math.random() < 0.02 || enemy.isBoss) {
       let h = this.pickups.getFirstDead(false);
       if (!h) { h = new Pickup(this); this.pickups.add(h); }
       h.spawnHeal(enemy.x + 20, enemy.y, 20);
+    }
+    // probabilidad de imán (recoge toda la XP de la pantalla al juntarlo)
+    if (Math.random() < 0.012 || enemy.isBoss) {
+      let m = this.pickups.getFirstDead(false);
+      if (!m) { m = new Pickup(this); this.pickups.add(m); }
+      m.spawnMagnet(enemy.x - 20, enemy.y);
     }
   }
 
@@ -560,8 +566,21 @@ class GameScene extends Phaser.Scene {
     } else if (pickup.kind === "heal") {
       player.heal(pickup.value);
       this.showDamage(player.x, player.y - 20, "+" + pickup.value, "#6fffb0");
+    } else if (pickup.kind === "magnet") {
+      this.collectAllGems();
     }
     pickup.despawn();
+  }
+
+  // Imán: marca toda la XP de la pantalla para que vuele hacia el jugador
+  collectAllGems() {
+    const list = this.pickups.getChildren();
+    for (let i = 0; i < list.length; i++) {
+      const g = list[i];
+      if (g.active && g.kind === "xp") g._attracting = true;
+    }
+    this.cameras.main.flash(220, 120, 200, 255);
+    this.flashMessage("¡IMÁN!", 0x9fe0ff);
   }
 
   // ---------------- Pickups (imán) ----------------
@@ -569,8 +588,6 @@ class GameScene extends Phaser.Scene {
     const range = this.player.pickupRange;
     const range2 = range * range;
     const px = this.player.x, py = this.player.y;
-    const now = this.time.now;
-    const LINGER = 4000, RAMP = 5000; // tras 4s tirada, deriva acelerando durante 5s
     const list = this.pickups.getChildren();
     for (let i = 0; i < list.length; i++) {
       const g = list[i];
@@ -578,17 +595,6 @@ class GameScene extends Phaser.Scene {
       const d = (g.x - px) ** 2 + (g.y - py) ** 2;
       if (g._attracting || d < range2) {
         g.attractTo(this.player, dt);
-        continue;
-      }
-      // Gema lejana que lleva mucho tiempo en el piso: deriva lenta hacia el jugador
-      const age = now - (g.bornAt || now);
-      if (age > LINGER) {
-        const t = Math.min(1, (age - LINGER) / RAMP);
-        const speed = 50 + t * 400; // 50 -> 450 px/s (termina alcanzándote)
-        const ang = Math.atan2(py - g.y, px - g.x);
-        g.setVelocity(Math.cos(ang) * speed, Math.sin(ang) * speed);
-      } else {
-        g.setVelocity(0, 0);
       }
     }
   }

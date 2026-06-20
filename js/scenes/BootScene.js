@@ -143,6 +143,18 @@ class BootScene extends Phaser.Scene {
     g.fillStyle(0xff5d7a, 1); g.fillCircle(10, 10, 9);
     g.fillStyle(0xffffff, 1); g.fillRect(8, 4, 4, 12); g.fillRect(4, 8, 12, 4);
     g.generateTexture("heart", 20, 20); g.destroy();
+
+    // Imán (herradura): recoge toda la XP de la pantalla
+    const m = this.g();
+    m.fillStyle(0x9fe0ff, 0.30); m.fillCircle(12, 12, 12); // glow
+    m.fillStyle(0xff4d4d, 1);
+    m.fillRect(4, 4, 16, 5);   // barra superior (curva)
+    m.fillRect(4, 9, 5, 11);   // pata izquierda
+    m.fillRect(15, 9, 5, 11);  // pata derecha
+    m.fillStyle(0xd6dae4, 1);  // polos grises
+    m.fillRect(4, 17, 5, 4);
+    m.fillRect(15, 17, 5, 4);
+    m.generateTexture("magnet", 24, 24); m.destroy();
   }
 
   makeIcons() {

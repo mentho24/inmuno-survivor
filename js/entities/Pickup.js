@@ -46,12 +46,20 @@ class Pickup extends Phaser.Physics.Arcade.Sprite {
     this._activateAt(x, y);
   }
 
+  // Ítem imán: al recogerlo junta toda la XP de la pantalla
+  spawnMagnet(x, y) {
+    this.kind = "magnet";
+    this.value = 0;
+    this.setTexture("magnet");
+    this._tierScale = 1.2;
+    this._activateAt(x, y);
+  }
+
   _activateAt(x, y) {
     this.setActive(true).setVisible(true);
     this.body.enable = true;
     this.setPosition(x, y);
     this._attracting = false;
-    this.bornAt = this.scene.time.now; // para la deriva por antigüedad
     this.setScale(this._tierScale || 1);
     this.setVelocity(0, 0);
   }
