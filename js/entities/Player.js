@@ -106,19 +106,22 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   update(dt, input) {
-    // Movimiento
+    // Movimiento (teclado o joystick analógico)
     const speed = this.stats.moveSpeed;
     let vx = 0, vy = 0;
-    if (input.left) vx -= 1;
-    if (input.right) vx += 1;
-    if (input.up) vy -= 1;
-    if (input.down) vy += 1;
+    if (input.ax !== undefined && (input.ax * input.ax + input.ay * input.ay) > 0.0001) {
+      // Vector analógico del joystick táctil
+      vx = input.ax; vy = input.ay;
+    } else {
+      if (input.left) vx -= 1;
+      if (input.right) vx += 1;
+      if (input.up) vy -= 1;
+      if (input.down) vy += 1;
+    }
 
     const v = new Phaser.Math.Vector2(vx, vy);
-    if (v.lengthSq() > 0) {
-      v.normalize();
-      this.facing.set(v.x, v.y);
-    }
+    if (v.length() > 1) v.normalize();           // tope de velocidad
+    if (v.lengthSq() > 0.0001) this.facing.copy(v).normalize();
     this.setVelocity(v.x * speed, v.y * speed);
 
     // i-frames

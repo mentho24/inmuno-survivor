@@ -36,6 +36,18 @@ class HUDScene extends Phaser.Scene {
       stroke: "#000", strokeThickness: 3,
     }).setOrigin(0.5).setScrollFactor(0);
 
+    // --- Botón de combinaciones (equivale a TAB, útil en móvil) ---
+    const cb = this.add.container(width - 36, 70);
+    const cbBg = this.add.circle(0, 0, 24, 0x1b2342, 0.9).setStrokeStyle(2, 0xffd24a);
+    const cbIcon = this.add.text(0, 0, "🧬", { fontSize: "24px" }).setOrigin(0.5);
+    cb.add([cbBg, cbIcon]);
+    cb.setSize(48, 48).setScrollFactor(0).setDepth(60)
+      .setInteractive(new Phaser.Geom.Circle(0, 0, 24), Phaser.Geom.Circle.Contains);
+    cb.on("pointerdown", () => {
+      const gs = this.scene.get("GameScene");
+      if (gs && gs.scene.isActive()) gs.toggleCombos();
+    });
+
     // --- Iconos de armas/pasivas (abajo) ---
     this.weaponIcons = [];
     this.passiveIcons = [];

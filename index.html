@@ -2,8 +2,11 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Horde Survivor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#0b0d17" />
+  <title>Inmuno Survivor</title>
   <style>
     html, body {
       margin: 0;
@@ -13,6 +16,12 @@
       overflow: hidden;
       font-family: "Trebuchet MS", system-ui, sans-serif;
       color: #e8e8f0;
+      /* Evita scroll/zoom/selección por gestos táctiles */
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior: none;
     }
     #game-root {
       width: 100vw;
@@ -24,11 +33,41 @@
     canvas {
       image-rendering: pixelated;
       box-shadow: 0 0 60px rgba(80, 60, 200, 0.35);
+      touch-action: none;
+    }
+    /* Aviso para girar el dispositivo en vertical (solo en táctiles) */
+    #rotate {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #0b0d17;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      z-index: 999;
+    }
+    #rotate .icon { font-size: 64px; animation: spin 2s ease-in-out infinite; }
+    #rotate h2 { font-size: 26px; margin: 16px 0 6px; }
+    #rotate p { color: #9fb0d8; font-size: 18px; margin: 0; }
+    @keyframes spin {
+      0%, 40% { transform: rotate(0deg); }
+      60%, 100% { transform: rotate(90deg); }
+    }
+    @media (orientation: portrait) and (pointer: coarse) {
+      #game-root { display: none; }
+      #rotate { display: flex; }
     }
   </style>
 </head>
 <body>
   <div id="game-root"></div>
+  <div id="rotate">
+    <div class="icon">📱</div>
+    <h2>Girá el dispositivo</h2>
+    <p>Inmuno Survivor se juega en horizontal</p>
+  </div>
 
   <!-- Phaser 3 desde CDN -->
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>

@@ -6,6 +6,7 @@ const config = {
   parent: "game-root",
   backgroundColor: "#0b0d17",
   pixelArt: false,
+  input: { activePointers: 3 }, // soporte multitouch (joystick + botones)
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,

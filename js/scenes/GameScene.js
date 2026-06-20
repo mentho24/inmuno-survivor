@@ -51,6 +51,9 @@ class GameScene extends Phaser.Scene {
       up2: "UP", down2: "DOWN", left2: "LEFT", right2: "RIGHT",
     });
 
+    // Joystick virtual táctil
+    this.setupTouchJoystick();
+
     // Spawning
     this.spawnTimer = 0;
     this.spawnInterval = 900;
@@ -93,6 +96,7 @@ class GameScene extends Phaser.Scene {
       up: k.up.isDown || k.up2.isDown,
       down: k.down.isDown || k.down2.isDown,
     };
+    if (this.joyId !== null) { input.ax = this.touchVector.x; input.ay = this.touchVector.y; }
     this.player.update(dt, input);
 
     // Fondo parallax con la cámara
@@ -576,6 +580,64 @@ class GameScene extends Phaser.Scene {
     }
   }
 
+  // ---------------- Joystick virtual (táctil) ----------------
+  setupTouchJoystick() {
+    this.joyId = null;
+    this.joyOrigin = { x: 0, y: 0 };
+    this.touchVector = { x: 0, y: 0 };
+    const RADIUS = 70;
+
+    // Visuales (fijos a la cámara, ocultos hasta tocar)
+    this.joyBase = this.add.circle(0, 0, RADIUS, 0xffffff, 0.10)
+      .setScrollFactor(0).setDepth(50).setVisible(false)
+      .setStrokeStyle(3, 0x6fffb0, 0.5);
+    this.joyThumb = this.add.circle(0, 0, 30, 0x6fffb0, 0.55)
+      .setScrollFactor(0).setDepth(51).setVisible(false);
+
+    this.input.on("pointerdown", (p) => {
+      if (!p.wasTouch) return;                 // joystick solo en táctil
+      if (this.paused || this.gameOver) return;
+      if (this.joyId !== null) return;          // ya hay un dedo controlando
+      this.joyId = p.id;
+      this.joyOrigin.x = p.x; this.joyOrigin.y = p.y;
+      this.joyBase.setPosition(p.x, p.y).setVisible(true);
+      this.joyThumb.setPosition(p.x, p.y).setVisible(true);
+    });
+
+    this.input.on("pointermove", (p) => {
+      if (p.id !== this.joyId) return;
+      let dx = p.x - this.joyOrigin.x;
+      let dy = p.y - this.joyOrigin.y;
+      const len = Math.hypot(dx, dy);
+      const clamped = Math.min(len, RADIUS);
+      const ang = Math.atan2(dy, dx);
+      const tx = Math.cos(ang) * clamped;
+      const ty = Math.sin(ang) * clamped;
+      this.joyThumb.setPosition(this.joyOrigin.x + tx, this.joyOrigin.y + ty);
+      // zona muerta del 12%
+      const mag = clamped / RADIUS;
+      if (mag < 0.12) { this.touchVector.x = 0; this.touchVector.y = 0; }
+      else { this.touchVector.x = Math.cos(ang) * mag; this.touchVector.y = Math.sin(ang) * mag; }
+    });
+
+    const release = (p) => {
+      if (p.id !== this.joyId) return;
+      this.joyId = null;
+      this.touchVector.x = 0; this.touchVector.y = 0;
+      this.joyBase.setVisible(false);
+      this.joyThumb.setVisible(false);
+    };
+    this.input.on("pointerup", release);
+    this.input.on("pointerupoutside", release);
+  }
+
+  resetJoystick() {
+    this.joyId = null;
+    this.touchVector.x = 0; this.touchVector.y = 0;
+    if (this.joyBase) this.joyBase.setVisible(false);
+    if (this.joyThumb) this.joyThumb.setVisible(false);
+  }
+
   // ---------------- Combinaciones (TAB) ----------------
   toggleCombos() {
     if (this.gameOver) return;
@@ -587,6 +649,7 @@ class GameScene extends Phaser.Scene {
   openCombos() {
     this.combosOpen = true;
     this.paused = true;
+    this.resetJoystick();
     this.physics.pause();
     this.scene.launch("CombosScene", { overlay: true, gameScene: this });
     this.scene.bringToTop("CombosScene");
@@ -604,6 +667,7 @@ class GameScene extends Phaser.Scene {
   // ---------------- Subir de nivel ----------------
   triggerLevelUp(levels) {
     this.paused = true;
+    this.resetJoystick();
     this.physics.pause();
     const choices = this.buildUpgradeChoices();
     this.scene.launch("LevelUpScene", { choices, levels, gameScene: this });

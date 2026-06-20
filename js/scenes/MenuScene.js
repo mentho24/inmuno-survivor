@@ -28,12 +28,15 @@ class MenuScene extends Phaser.Scene {
 
     // ----- Campo de nombre editable -----
     this.playerName = loadPlayerName();
-    this.add.text(width / 2, height * 0.36, "Tu nombre (escribí para cambiarlo):", {
+    this.add.text(width / 2, height * 0.36, "Tu nombre (tocá o escribí para cambiarlo):", {
       fontFamily: "Trebuchet MS", fontSize: "17px", color: "#9fb0d8",
     }).setOrigin(0.5);
 
     this.nameBox = this.add.rectangle(width / 2, height * 0.42, 360, 50, 0x141a2e)
-      .setStrokeStyle(2, 0x6fffb0);
+      .setStrokeStyle(2, 0x6fffb0)
+      .setInteractive({ useHandCursor: true });
+    // Toque/clic: abre el teclado del dispositivo (clave en móvil)
+    this.nameBox.on("pointerdown", () => this.promptName());
     this.nameText = this.add.text(width / 2, height * 0.42, this.playerName, {
       fontFamily: "Trebuchet MS", fontSize: "30px", color: "#ffffff", fontStyle: "bold",
     }).setOrigin(0.5);
@@ -70,7 +73,7 @@ class MenuScene extends Phaser.Scene {
     mkBtn(width / 2 + 130, "🧬 Combinaciones", () => { this.persist(); this.scene.start("CombosScene", { from: "MenuScene" }); });
 
     this.add.text(width / 2, height * 0.80,
-      "Moverse: WASD / Flechas   •   Tus defensas atacan solas   •   TAB: ver combinaciones en partida",
+      "Moverse: WASD / Flechas o joystick táctil   •   Las defensas atacan solas   •   TAB o botón 🧬: combinaciones",
       { fontFamily: "Trebuchet MS", fontSize: "17px", color: "#b08088" }
     ).setOrigin(0.5);
 
@@ -92,6 +95,16 @@ class MenuScene extends Phaser.Scene {
       this.playerName += e.key.toUpperCase();
       this.refreshName();
     }
+  }
+
+  promptName() {
+    let v = null;
+    try { v = window.prompt("Tu nombre (máx 12 caracteres):", this.playerName); } catch (e) { v = null; }
+    if (v === null) return;
+    v = v.toUpperCase().replace(/[^A-Z0-9 ]/g, "").slice(0, 12).trim();
+    this.playerName = v || "JUGADOR";
+    savePlayerName(this.playerName);
+    this.refreshName();
   }
 
   refreshName() {
