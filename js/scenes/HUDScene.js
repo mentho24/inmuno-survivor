@@ -27,11 +27,12 @@ class HUDScene extends Phaser.Scene {
       stroke: "#000", strokeThickness: 3,
     }).setOrigin(1, 0).setScrollFactor(0);
 
-    // --- Barra de vida (abajo izquierda) ---
-    const hy = this.scale.height - 36;
-    this.hpBg = this.add.rectangle(16, hy, 280, 22, 0x10131f).setOrigin(0).setScrollFactor(0).setStrokeStyle(2, 0x000000);
-    this.hpBar = this.add.rectangle(18, hy + 2, 276, 18, 0xff4d6a).setOrigin(0).setScrollFactor(0);
-    this.hpText = this.add.text(156, hy + 11, "100/100", {
+    // --- Barra de vida (abajo centro, para no chocar con el D-pad) ---
+    const hy = this.scale.height - 34;
+    const hx = width / 2 - 140;
+    this.hpBg = this.add.rectangle(hx, hy, 280, 22, 0x10131f).setOrigin(0).setScrollFactor(0).setStrokeStyle(2, 0x000000);
+    this.hpBar = this.add.rectangle(hx + 2, hy + 2, 276, 18, 0xff4d6a).setOrigin(0).setScrollFactor(0);
+    this.hpText = this.add.text(width / 2, hy + 11, "100/100", {
       fontFamily: "Trebuchet MS", fontSize: "15px", color: "#ffffff", fontStyle: "bold",
       stroke: "#000", strokeThickness: 3,
     }).setOrigin(0.5).setScrollFactor(0);
@@ -89,7 +90,7 @@ class HUDScene extends Phaser.Scene {
     this.passiveIcons = [];
 
     const startX = 16;
-    const yW = this.scale.height - 78;
+    const yW = 54; // arriba-izquierda, debajo de la barra de XP
     weapons.forEach((w, i) => {
       const img = this.add.image(startX + 22 + i * 44, yW, w.icon).setScale(0.62).setScrollFactor(0);
       const lvl = this.add.text(startX + 22 + i * 44 + 12, yW + 10, "" + w.level, {
