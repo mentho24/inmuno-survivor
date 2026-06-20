@@ -17,6 +17,9 @@ class MenuScene extends Phaser.Scene {
     const { width, height } = this.scale;
     this.add.tileSprite(0, 0, width, height, "bg_tile").setOrigin(0).setScrollFactor(0).setAlpha(0.6);
 
+    // Botón de música (clic). El atajo M no se usa aquí para no chocar con el nombre.
+    Music.addButton(this, width - 44, 40, 0.95);
+
     this.add.text(width / 2, height * 0.16, "INMUNO SURVIVOR", {
       fontFamily: "Trebuchet MS", fontSize: "66px", color: "#ffffff",
       fontStyle: "bold", stroke: "#c0392b", strokeThickness: 8,

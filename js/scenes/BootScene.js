@@ -5,14 +5,43 @@
 class BootScene extends Phaser.Scene {
   constructor() { super("BootScene"); }
 
+  preload() {
+    this.load.audio("music", "music.ogg");
+  }
+
   create() {
     this.makePlayer();
     this.makeEnemies();
     this.makeProjectiles();
     this.makePickups();
     this.makeIcons();
+    this.makeMusicIcons();
     this.makeMisc();
+    Music.init(this);
     this.scene.start("MenuScene");
+  }
+
+  makeMusicIcons() {
+    // Música ON (parlante + ondas)
+    let g = this.g();
+    g.fillStyle(0x6fffb0, 1);
+    g.fillRect(7, 16, 6, 8);
+    g.fillTriangle(13, 12, 13, 28, 24, 34);
+    g.fillTriangle(13, 12, 24, 6, 24, 34);
+    g.lineStyle(2.5, 0x6fffb0, 1);
+    g.beginPath(); g.arc(25, 20, 6, -0.9, 0.9); g.strokePath();
+    g.beginPath(); g.arc(25, 20, 11, -0.9, 0.9); g.strokePath();
+    g.generateTexture("music_on", 40, 40); g.destroy();
+
+    // Música OFF (parlante + X roja)
+    g = this.g();
+    g.fillStyle(0x9aa6c8, 1);
+    g.fillRect(7, 16, 6, 8);
+    g.fillTriangle(13, 12, 13, 28, 24, 34);
+    g.fillTriangle(13, 12, 24, 6, 24, 34);
+    g.lineStyle(3, 0xff5d6a, 1);
+    g.beginPath(); g.moveTo(27, 13); g.lineTo(36, 24); g.moveTo(36, 13); g.lineTo(27, 24); g.strokePath();
+    g.generateTexture("music_off", 40, 40); g.destroy();
   }
 
   g() { return this.make.graphics({ x: 0, y: 0, add: false }); }

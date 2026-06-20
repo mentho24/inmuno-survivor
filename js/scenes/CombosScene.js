@@ -52,35 +52,28 @@ class CombosScene extends Phaser.Scene {
     const rowH = (height - startY - 80) / combos.length;
 
     const boxW = width * 0.8;
+    // Una "unidad" = icono con su nombre debajo
+    const unit = (ux, y, icon, name, color, scale, tint) => {
+      const img = this.add.image(ux, y - 7, icon).setScale(scale);
+      if (tint) img.setTint(tint);
+      this.add.text(ux, y + 16, name, {
+        fontFamily: "Trebuchet MS", fontSize: "12px", color, fontStyle: "bold",
+      }).setOrigin(0.5, 0.5);
+    };
+    const op = (ox, y, s, col) => this.add.text(ox, y - 6, s, {
+      fontFamily: "Trebuchet MS", fontSize: "30px", color: col, fontStyle: "bold",
+    }).setOrigin(0.5);
+
     combos.forEach((c, i) => {
       const y = startY + rowH * (i + 0.5);
       this.add.rectangle(cx, y, boxW, rowH - 8, 0x141a2e, 0.8).setStrokeStyle(2, 0xffd24a);
-      const left = cx - boxW / 2;
 
-      // --- Evolución (izquierda) ---
-      this.add.image(left + 38, y, c.evo.icon).setScale(1.0).setTint(0xffe89a);
-      this.add.text(left + 72, y - 11, c.evo.name, {
-        fontFamily: "Trebuchet MS", fontSize: "22px", color: "#ffe08a", fontStyle: "bold",
-        wordWrap: { width: boxW * 0.40 },
-      }).setOrigin(0, 0.5);
-      this.add.text(left + 72, y + 14, c.evo.desc, {
-        fontFamily: "Trebuchet MS", fontSize: "14px", color: "#aab6d8",
-        wordWrap: { width: boxW * 0.42 },
-      }).setOrigin(0, 0.5);
-
-      // --- Receta (derecha): arma base (máx) + pasiva ---
-      const rx = cx + boxW * 0.14;
-      this.add.text(rx, y - 24, "Combina:", {
-        fontFamily: "Trebuchet MS", fontSize: "13px", color: "#7c89b0",
-      }).setOrigin(0, 0.5);
-      this.add.image(rx + 14, y - 2, c.base.icon).setScale(0.5);
-      this.add.text(rx + 36, y - 2, c.base.name + "  (máx)", {
-        fontFamily: "Trebuchet MS", fontSize: "15px", color: "#cdd6ee",
-      }).setOrigin(0, 0.5);
-      this.add.image(rx + 14, y + 20, c.passive.icon).setScale(0.5);
-      this.add.text(rx + 36, y + 20, "+ " + c.passive.name, {
-        fontFamily: "Trebuchet MS", fontSize: "15px", color: "#9fe0ff",
-      }).setOrigin(0, 0.5);
+      // base + pasiva = evolución (cada uno: icono + nombre debajo)
+      unit(cx - 330, y, c.base.icon, c.base.name, "#cdd6ee", 0.65);
+      op(cx - 200, y, "+", "#ffffff");
+      unit(cx - 70, y, c.passive.icon, c.passive.name, "#9fe0ff", 0.65);
+      op(cx + 70, y, "=", "#ffd24a");
+      unit(cx + 285, y, c.evo.icon, c.evo.name, "#ffe08a", 0.85, 0xffe89a);
     });
 
     // Botón de cerrar arriba a la derecha (siempre alcanzable en móvil)

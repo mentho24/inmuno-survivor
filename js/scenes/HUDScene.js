@@ -61,6 +61,10 @@ class HUDScene extends Phaser.Scene {
       this.combosBtn.on("pointerup", () => { this.combosBtn.setFillStyle(0x1b2342, 0.95); openCombos(); });
     }
 
+    // --- Botón de música (toque) + atajo M ---
+    Music.addButton(this, width - 32, this.scale.height - 30, 0.72);
+    Music.bindKey(this);
+
     // --- Iconos de armas/pasivas (abajo) ---
     this.weaponIcons = [];
     this.passiveIcons = [];
