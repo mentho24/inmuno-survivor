@@ -2,6 +2,10 @@
 .gh_token
 *.token
 
+# Entorno del deploy (contiene el token del túnel de Cloudflare)
+.env
+deploy/.env
+
 # Sistema
 .DS_Store
 Thumbs.db
