@@ -70,7 +70,8 @@ class GameOverScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // ----- Desglose (izquierda) -----
-    this._panel(width * 0.27, 300, 360, 300, "DESGLOSE");
+    const px = width * 0.27;
+    this._panel(px, 300, 480, 300, "DESGLOSE");
     const rows = [
       ["Virus neutralizados", r.kills, pts.kills],
       ["Nivel alcanzado", r.level, pts.level],
@@ -81,14 +82,17 @@ class GameOverScene extends Phaser.Scene {
     if (victory) rows.push(["Bonus de victoria", "★", pts.victory]);
     rows.forEach((row, i) => {
       const y = 348 + i * 40;
-      this.add.text(width * 0.27 - 160, y, row[0], {
-        fontFamily: "Trebuchet MS", fontSize: "19px", color: "#cdd6ee",
+      // Etiqueta (izquierda)
+      this.add.text(px - 205, y, row[0], {
+        fontFamily: "Trebuchet MS", fontSize: "17px", color: "#cdd6ee",
       }).setOrigin(0, 0.5);
-      this.add.text(width * 0.27 + 60, y, "" + row[1], {
-        fontFamily: "Trebuchet MS", fontSize: "19px", color: "#ffffff", fontStyle: "bold",
-      }).setOrigin(0, 0.5);
+      // Valor (alineado a la derecha en su columna)
+      this.add.text(px + 70, y, "" + row[1], {
+        fontFamily: "Trebuchet MS", fontSize: "18px", color: "#ffffff", fontStyle: "bold",
+      }).setOrigin(1, 0.5);
+      // Puntos (alineado a la derecha, contra el borde del panel)
       const p = row[2];
-      this.add.text(width * 0.27 + 168, y, (p >= 0 ? "+" : "") + p, {
+      this.add.text(px + 220, y, (p >= 0 ? "+" : "") + p, {
         fontFamily: "Trebuchet MS", fontSize: "18px", fontStyle: "bold",
         color: p >= 0 ? "#8affc0" : "#ff8a9a",
       }).setOrigin(1, 0.5);
