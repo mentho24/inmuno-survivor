@@ -1,0 +1,8 @@
+# Credenciales temporales (nunca subir)
+.gh_token
+*.token
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.log

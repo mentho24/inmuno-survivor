@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Horde Survivor</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #0b0d17;
+      overflow: hidden;
+      font-family: "Trebuchet MS", system-ui, sans-serif;
+      color: #e8e8f0;
+    }
+    #game-root {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    canvas {
+      image-rendering: pixelated;
+      box-shadow: 0 0 60px rgba(80, 60, 200, 0.35);
+    }
+  </style>
+</head>
+<body>
+  <div id="game-root"></div>
+
+  <!-- Phaser 3 desde CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+
+  <!-- Datos del juego -->
+  <script src="js/data.js"></script>
+
+  <!-- Entidades -->
+  <script src="js/entities/Player.js"></script>
+  <script src="js/entities/Enemy.js"></script>
+  <script src="js/entities/Pickup.js"></script>
+
+  <!-- Escenas -->
+  <script src="js/scenes/BootScene.js"></script>
+  <script src="js/scenes/MenuScene.js"></script>
+  <script src="js/scenes/GameScene.js"></script>
+  <script src="js/scenes/HUDScene.js"></script>
+  <script src="js/scenes/LevelUpScene.js"></script>
+  <script src="js/scenes/CombosScene.js"></script>
+  <script src="js/scenes/RankingScene.js"></script>
+  <script src="js/scenes/GameOverScene.js"></script>
+
+  <!-- Arranque -->
+  <script src="js/main.js"></script>
+</body>
+</html>
