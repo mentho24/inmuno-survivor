@@ -164,13 +164,16 @@ class GameScene extends Phaser.Scene {
     // 'ramp' crece despacio al principio y se acelera con el tiempo.
     // Rampa estirada sobre 15 min: arranca suave y trepa de forma pareja.
     const ramp = (minutes * minutes) / (minutes + 4);
-    this.spawnInterval = Math.max(135, 860 - ramp * 130);
-    const hpScale = 1 + ramp * 0.78;
-    const dmgScale = 1 + ramp * 0.26;
+    // Aceleración de fin de partida: desde el min 6 la vida del enemigo trepa
+    // cada vez más rápido, para que del minuto 10 al 15 sea exigente de verdad.
+    const lateSurge = minutes > 6 ? Math.pow(minutes - 6, 2) * 0.4 : 0;
+    this.spawnInterval = Math.max(120, 860 - ramp * 135);
+    const hpScale = 1 + ramp * 0.9 + lateSurge;
+    const dmgScale = 1 + ramp * 0.28 + (minutes > 8 ? (minutes - 8) * 0.2 : 0);
 
     if (this.spawnTimer >= this.spawnInterval) {
       this.spawnTimer = 0;
-      const batch = 2 + Math.floor(ramp * 2.4);
+      const batch = 2 + Math.floor(ramp * 2.5);
       for (let i = 0; i < batch; i++) {
         this.spawnEnemy(this.pickEnemyType(minutes), hpScale, dmgScale);
       }
