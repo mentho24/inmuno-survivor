@@ -14,9 +14,18 @@ class CombosScene extends Phaser.Scene {
   create() {
     const { width, height } = this.scale;
 
-    if (this.overlay) this.add.rectangle(0, 0, width, height, 0x05060f, 0.86).setOrigin(0);
-    else { this.add.tileSprite(0, 0, width, height, "bg_tile").setOrigin(0).setAlpha(0.5);
-           this.add.rectangle(0, 0, width, height, 0x05060f, 0.7).setOrigin(0); }
+    if (this.overlay) {
+      this.bgRect = this.add.rectangle(0, 0, width, height, 0x05060f, 0.86).setOrigin(0);
+    } else {
+      this.add.tileSprite(0, 0, width, height, "bg_tile").setOrigin(0).setAlpha(0.5);
+      this.bgRect = this.add.rectangle(0, 0, width, height, 0x05060f, 0.7).setOrigin(0);
+    }
+    // Tocar fuera de las tarjetas cierra (se habilita tras un instante para no
+    // capturar el mismo toque que abrió el menú).
+    this.time.delayedCall(180, () => {
+      this.bgRect.setInteractive();
+      this.bgRect.on("pointerup", () => this.close());
+    });
 
     this.add.text(width / 2, 46, "🧬 COMBINACIONES DE EVOLUCIÓN", {
       fontFamily: "Trebuchet MS", fontSize: "38px", color: "#ffe08a", fontStyle: "bold",
@@ -72,15 +81,22 @@ class CombosScene extends Phaser.Scene {
       }).setOrigin(0.5, 0);
     });
 
-    // Pie / cerrar
-    const hint = this.overlay ? "TAB o ESC para volver al juego" : "ESC o clic para volver al menú";
-    const close = this.add.text(width / 2, height - 34, hint, {
-      fontFamily: "Trebuchet MS", fontSize: "20px", color: "#0b0d17",
-      backgroundColor: "#6fffb0", padding: { x: 22, y: 10 }, fontStyle: "bold",
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    close.on("pointerover", () => close.setScale(1.05));
-    close.on("pointerout", () => close.setScale(1));
-    close.on("pointerdown", () => this.close());
+    // Botón de cerrar arriba a la derecha (siempre alcanzable en móvil)
+    const cbw = 150, cbh = 52, cbx = width - 20 - cbw / 2, cby = 46;
+    const closeBtn = this.add.rectangle(cbx, cby, cbw, cbh, 0x6fffb0, 1)
+      .setStrokeStyle(3, 0x0b0d17).setDepth(20).setInteractive({ useHandCursor: true });
+    this.add.text(cbx, cby, "✕  VOLVER", {
+      fontFamily: "Trebuchet MS", fontSize: "24px", color: "#0b0d17", fontStyle: "bold",
+    }).setOrigin(0.5).setDepth(21);
+    closeBtn.on("pointerdown", () => closeBtn.setFillStyle(0x4fd99a, 1));
+    closeBtn.on("pointerup", () => this.close());
+
+    // Pie de ayuda (no es botón; el cierre es el de arriba o tocar fuera)
+    this.add.text(width / 2, height - 26,
+      this.overlay ? "Tocá fuera, el botón ✕ o TAB/ESC para volver al juego"
+                   : "Tocá fuera, el botón ✕ o ESC para volver al menú", {
+      fontFamily: "Trebuchet MS", fontSize: "17px", color: "#9fb0d8",
+    }).setOrigin(0.5);
 
     this.input.keyboard.on("keydown-ESC", () => this.close());
   }
