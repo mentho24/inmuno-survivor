@@ -1,0 +1,8 @@
+# No incluir en la imagen (no hacen falta para servir el juego)
+.git
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+.gh_token
+*.token
