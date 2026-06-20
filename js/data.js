@@ -13,7 +13,7 @@ const BASE_STATS = {
   maxHp: 110,
   moveSpeed: 235,
   pickupRadius: 120,
-  might: 1.0,        // multiplicador de daño global
+  might: 1.4,        // multiplicador de daño global (base +40%)
   haste: 1.0,        // multiplicador de cadencia (más alto = ataca más seguido)
   armor: 0,          // resta daño plano por golpe
   regen: 0,          // hp por segundo
@@ -224,43 +224,43 @@ const WEAPONS = {
   bolt_evo: {
     id: "bolt_evo", type: "bolt", evolved: true, name: "Anticuerpos Monoclonales", icon: "wi_bolt",
     desc: "Lluvia perforante de anticuerpos de alto daño.",
-    maxLevel: 1, base: { cooldown: 360, damage: 72, speed: 640, count: 6, pierce: 4 },
+    maxLevel: 1, base: { cooldown: 360, damage: 94, speed: 640, count: 6, pierce: 4 },
     perLevel: [], apply() {},
   },
   whip_evo: {
     id: "whip_evo", type: "whip", evolved: true, name: "Fagocitosis", icon: "wi_whip",
     desc: "Engulle y disuelve todo a tu alrededor.",
-    maxLevel: 1, base: { cooldown: 650, damage: 95, count: 1, width: 200, height: 200, engulf: true },
+    maxLevel: 1, base: { cooldown: 650, damage: 124, count: 1, width: 200, height: 200, engulf: true },
     perLevel: [], apply() {},
   },
   aura_evo: {
     id: "aura_evo", type: "aura", evolved: true, name: "Tormenta de Citoquinas", icon: "wi_aura",
     desc: "Aura enorme que pulveriza virus sin parar.",
-    maxLevel: 1, base: { tick: 230, damage: 42, radius: 175 },
+    maxLevel: 1, base: { tick: 230, damage: 55, radius: 175 },
     perLevel: [], apply() {},
   },
   orbit_evo: {
     id: "orbit_evo", type: "orbit", evolved: true, name: "Apoptosis Orbital", icon: "wi_orbit",
     desc: "Anillo de lisosomas letales girando a gran velocidad.",
-    maxLevel: 1, base: { count: 7, damage: 58, radius: 108, speed: 4.4, hitCooldown: 160 },
+    maxLevel: 1, base: { count: 7, damage: 75, radius: 108, speed: 4.4, hitCooldown: 160 },
     perLevel: [], apply() {},
   },
   knife_evo: {
     id: "knife_evo", type: "knife", evolved: true, name: "Estrés Oxidativo", icon: "wi_knife",
     desc: "Estallido de radicales en TODAS las direcciones.",
-    maxLevel: 1, base: { cooldown: 340, damage: 38, speed: 700, count: 14, pierce: 3, spread: 0, ring: true },
+    maxLevel: 1, base: { cooldown: 340, damage: 49, speed: 700, count: 14, pierce: 3, spread: 0, ring: true },
     perLevel: [], apply() {},
   },
   nova_evo: {
     id: "nova_evo", type: "nova", evolved: true, name: "Pirexia", icon: "wi_nova",
     desc: "Onda febril devastadora que además te cura.",
-    maxLevel: 1, base: { cooldown: 1700, damage: 55, radius: 285, healOnCast: 6 },
+    maxLevel: 1, base: { cooldown: 1700, damage: 72, radius: 285, healOnCast: 6 },
     perLevel: [], apply() {},
   },
   chain_evo: {
     id: "chain_evo", type: "chain", evolved: true, name: "Respuesta Adaptativa", icon: "wi_chain",
     desc: "Interferón que se propaga sin control entre virus.",
-    maxLevel: 1, base: { cooldown: 650, damage: 72, jumps: 14, range: 380 },
+    maxLevel: 1, base: { cooldown: 650, damage: 94, jumps: 14, range: 380 },
     perLevel: [], apply() {},
   },
 };
