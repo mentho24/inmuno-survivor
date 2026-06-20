@@ -40,6 +40,9 @@ class GameOverScene extends Phaser.Scene {
     const ranking = this._saveAndLoadRanking(entry);
     const rank = ranking.findIndex(e => e.id === entry.id) + 1;
 
+    // Envío al ranking global (si hay API; en Pages simplemente no hace nada)
+    if (typeof Api !== "undefined") Api.submit(entry);
+
     // ----- Título -----
     this.add.text(width / 2, 56, victory ? "¡INFECCIÓN ERRADICADA!" : "INFECCIÓN TERMINAL", {
       fontFamily: "Trebuchet MS", fontSize: "54px", fontStyle: "bold",

@@ -1,0 +1,88 @@
+name: inmuno-survivor
+
+services:
+  # ---------- nginx: sirve el juego + reverse-proxy a la API ----------
+  web:
+    image: mentho24/inmuno-survivor:latest
+    container_name: inmuno-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      # Solo accesible desde el propio host (pruebas/health).
+      # El público entra por el túnel de Cloudflare, NO por este puerto.
+      - "127.0.0.1:8080:80"
+    networks:
+      - inmuno
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+      - NET_BIND_SERVICE
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  # ---------- API de ranking (Node, sin dependencias) ----------
+  api:
+    build: ./api
+    image: inmuno-api:latest
+    container_name: inmuno-api
+    restart: unless-stopped
+    environment:
+      - DATA_FILE=/data/scores.json
+      - PORT=3000
+      - CORS_ORIGIN=${CORS_ORIGIN:-*}
+    volumes:
+      - scores:/data
+    networks:
+      - inmuno
+    # API NO expuesta al host: solo la alcanza nginx por la red interna
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  # ---------- Cloudflare Tunnel (perfil opcional "tunnel") ----------
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: inmuno-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
+    depends_on:
+      - web
+    networks:
+      - inmuno
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    profiles:
+      - tunnel
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+networks:
+  inmuno:
+    driver: bridge
+
+volumes:
+  scores:
