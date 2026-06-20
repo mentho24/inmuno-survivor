@@ -538,13 +538,13 @@ class GameScene extends Phaser.Scene {
 
   _maybeDropExtras(enemy) {
     // probabilidad de corazón
-    if (Math.random() < 0.02 || enemy.isBoss) {
+    if (Math.random() < 0.008 || enemy.isBoss) {
       let h = this.pickups.getFirstDead(false);
       if (!h) { h = new Pickup(this); this.pickups.add(h); }
       h.spawnHeal(enemy.x + 20, enemy.y, 20);
     }
     // probabilidad de imán (recoge toda la XP de la pantalla al juntarlo)
-    if (Math.random() < 0.004 || enemy.isBoss) {
+    if (Math.random() < 0.0015 || enemy.isBoss) {
       let m = this.pickups.getFirstDead(false);
       if (!m) { m = new Pickup(this); this.pickups.add(m); }
       m.spawnMagnet(enemy.x - 20, enemy.y);
@@ -565,6 +565,7 @@ class GameScene extends Phaser.Scene {
   onPickup(player, pickup) {
     if (!pickup.active) return;
     if (pickup.kind === "xp") {
+      Sfx.play("pickup");
       const gained = Math.max(1, Math.round(pickup.value * player.stats.growth));
       const levels = player.gainXp(gained);
       if (levels > 0) this.triggerLevelUp(levels);

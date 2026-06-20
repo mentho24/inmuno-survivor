@@ -85,6 +85,9 @@ const Sfx = {
       case "death": // muerte de enemigo (throttle para hordas)
         if (this._ok("death", 55)) this._tone({ freq: 300, dur: 0.06, type: "square", vol: 0.07, slideTo: 130 });
         break;
+      case "pickup": // juntar gema de XP (throttle para no saturar con el imán)
+        if (this._ok("pickup", 50)) this._tone({ freq: 1040, dur: 0.05, type: "sine", vol: 0.09, slideTo: 1280 });
+        break;
     }
   },
 };
