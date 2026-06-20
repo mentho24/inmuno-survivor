@@ -7,6 +7,12 @@ class HUDScene extends Phaser.Scene {
   create() {
     const { width } = this.scale;
 
+    // ¿Dispositivo táctil? Solo en táctil reubicamos el HUD para el joystick.
+    const dev = this.sys.game.device.input;
+    this.isTouch = !!(dev && dev.touch) ||
+      (typeof window !== "undefined" &&
+        ("ontouchstart" in window || (navigator && navigator.maxTouchPoints > 0)));
+
     // --- Barra de XP (arriba, ancho completo) ---
     this.xpBg = this.add.rectangle(0, 0, width, 14, 0x10131f).setOrigin(0).setScrollFactor(0);
     this.xpBar = this.add.rectangle(0, 0, 0, 14, 0x6fffb0).setOrigin(0).setScrollFactor(0);
@@ -27,27 +33,33 @@ class HUDScene extends Phaser.Scene {
       stroke: "#000", strokeThickness: 3,
     }).setOrigin(1, 0).setScrollFactor(0);
 
-    // --- Barra de vida (abajo centro, para no chocar con el D-pad) ---
-    const hy = this.scale.height - 34;
-    const hx = width / 2 - 140;
+    // --- Barra de vida: abajo-izquierda (desktop, original) / abajo-centro (táctil) ---
+    const hy = this.scale.height - 36;
+    const hx = this.isTouch ? (width / 2 - 140) : 16;
     this.hpBg = this.add.rectangle(hx, hy, 280, 22, 0x10131f).setOrigin(0).setScrollFactor(0).setStrokeStyle(2, 0x000000);
     this.hpBar = this.add.rectangle(hx + 2, hy + 2, 276, 18, 0xff4d6a).setOrigin(0).setScrollFactor(0);
-    this.hpText = this.add.text(width / 2, hy + 11, "100/100", {
+    this.hpText = this.add.text(hx + 140, hy + 11, "100/100", {
       fontFamily: "Trebuchet MS", fontSize: "15px", color: "#ffffff", fontStyle: "bold",
       stroke: "#000", strokeThickness: 3,
     }).setOrigin(0.5).setScrollFactor(0);
 
-    // --- Botón de combinaciones (equivale a TAB, útil en móvil) ---
-    const cb = this.add.container(width - 36, 70);
-    const cbBg = this.add.circle(0, 0, 24, 0x1b2342, 0.9).setStrokeStyle(2, 0xffd24a);
-    const cbIcon = this.add.text(0, 0, "🧬", { fontSize: "24px" }).setOrigin(0.5);
-    cb.add([cbBg, cbIcon]);
-    cb.setSize(48, 48).setScrollFactor(0).setDepth(60)
-      .setInteractive(new Phaser.Geom.Circle(0, 0, 24), Phaser.Geom.Circle.Contains);
-    cb.on("pointerdown", () => {
-      const gs = this.scene.get("GameScene");
-      if (gs && gs.scene.isActive()) gs.toggleCombos();
-    });
+    // --- Botón de combinaciones (solo táctil; en desktop se usa TAB) ---
+    if (this.isTouch) {
+      const bw = 78, bh = 50, bx = width - 16 - bw / 2, by = 62;
+      this.combosBtn = this.add.rectangle(bx, by, bw, bh, 0x1b2342, 0.95)
+        .setStrokeStyle(3, 0xffd24a).setScrollFactor(0).setDepth(60)
+        .setInteractive({ useHandCursor: true });
+      this.add.text(bx, by, "EVO", {
+        fontFamily: "Trebuchet MS", fontSize: "22px", color: "#ffd24a", fontStyle: "bold",
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(61);
+      const openCombos = () => {
+        const gs = this.scene.get("GameScene");
+        if (gs && gs.scene.isActive()) gs.toggleCombos();
+      };
+      this.combosBtn.on("pointerdown", () => this.combosBtn.setFillStyle(0x2e3a66, 1));
+      this.combosBtn.on("pointerout", () => this.combosBtn.setFillStyle(0x1b2342, 0.95));
+      this.combosBtn.on("pointerup", () => { this.combosBtn.setFillStyle(0x1b2342, 0.95); openCombos(); });
+    }
 
     // --- Iconos de armas/pasivas (abajo) ---
     this.weaponIcons = [];
@@ -90,7 +102,8 @@ class HUDScene extends Phaser.Scene {
     this.passiveIcons = [];
 
     const startX = 16;
-    const yW = 54; // arriba-izquierda, debajo de la barra de XP
+    // Desktop: posición original (abajo-izquierda). Táctil: arriba-izquierda (lugar para el joystick).
+    const yW = this.isTouch ? 54 : (this.scale.height - 78);
     weapons.forEach((w, i) => {
       const img = this.add.image(startX + 22 + i * 44, yW, w.icon).setScale(0.62).setScrollFactor(0);
       const lvl = this.add.text(startX + 22 + i * 44 + 12, yW + 10, "" + w.level, {
