@@ -288,7 +288,8 @@ const ENEMIES = {
   corona: { key: "e_corona", hp: 100, speed: 48, damage: 18, xp: 5, radius: 24, color: 0xe05050, knock: 0.35, name: "Coronavirus" },
 };
 
-// Curva de XP: suave y con crecimiento moderado para subir de nivel seguido
+// Curva de XP: más empinada para que las mejoras se repartan en los 15 minutos
+// (antes se maximizaba todo antes del minuto 6).
 function xpForLevel(level) {
-  return Math.floor(4 + level * 4 + Math.pow(level, 1.35));
+  return Math.floor(6 + level * 6 + Math.pow(level, 1.8));
 }
