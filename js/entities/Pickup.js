@@ -51,6 +51,7 @@ class Pickup extends Phaser.Physics.Arcade.Sprite {
     this.body.enable = true;
     this.setPosition(x, y);
     this._attracting = false;
+    this.bornAt = this.scene.time.now; // para la deriva por antigüedad
     this.setScale(this._tierScale || 1);
     this.setVelocity(0, 0);
   }

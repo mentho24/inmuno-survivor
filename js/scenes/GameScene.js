@@ -569,6 +569,8 @@ class GameScene extends Phaser.Scene {
     const range = this.player.pickupRange;
     const range2 = range * range;
     const px = this.player.x, py = this.player.y;
+    const now = this.time.now;
+    const LINGER = 4000, RAMP = 5000; // tras 4s tirada, deriva acelerando durante 5s
     const list = this.pickups.getChildren();
     for (let i = 0; i < list.length; i++) {
       const g = list[i];
@@ -576,6 +578,17 @@ class GameScene extends Phaser.Scene {
       const d = (g.x - px) ** 2 + (g.y - py) ** 2;
       if (g._attracting || d < range2) {
         g.attractTo(this.player, dt);
+        continue;
+      }
+      // Gema lejana que lleva mucho tiempo en el piso: deriva lenta hacia el jugador
+      const age = now - (g.bornAt || now);
+      if (age > LINGER) {
+        const t = Math.min(1, (age - LINGER) / RAMP);
+        const speed = 50 + t * 400; // 50 -> 450 px/s (termina alcanzándote)
+        const ang = Math.atan2(py - g.y, px - g.x);
+        g.setVelocity(Math.cos(ang) * speed, Math.sin(ang) * speed);
+      } else {
+        g.setVelocity(0, 0);
       }
     }
   }
