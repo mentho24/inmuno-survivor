@@ -607,7 +607,7 @@ class GameScene extends Phaser.Scene {
     this.input.on("pointerdown", (p) => {
       if (this.paused || this.gameOver) return;
       if (this.joyId !== null) return;                 // ya hay un dedo controlando
-      if (p.x > W - 130 && p.y < 130) return;          // zona del botón EVO (arriba-derecha)
+      if (p.x > W - 130 && p.y < 150) return;          // zona del botón EVO (arriba-derecha)
       this.joyId = p.id;
       this.joyOrigin.x = p.x; this.joyOrigin.y = p.y;
       this.joyBase.setPosition(p.x, p.y).setVisible(true);

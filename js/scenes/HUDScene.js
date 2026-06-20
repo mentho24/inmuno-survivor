@@ -45,7 +45,7 @@ class HUDScene extends Phaser.Scene {
 
     // --- Botón de combinaciones (solo táctil; en desktop se usa TAB) ---
     if (this.isTouch) {
-      const bw = 78, bh = 50, bx = width - 16 - bw / 2, by = 62;
+      const bw = 78, bh = 50, bx = width - 16 - bw / 2, by = 104; // debajo del contador de muertes
       this.combosBtn = this.add.rectangle(bx, by, bw, bh, 0x1b2342, 0.95)
         .setStrokeStyle(3, 0xffd24a).setScrollFactor(0).setDepth(60)
         .setInteractive({ useHandCursor: true });
