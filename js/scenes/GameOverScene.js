@@ -34,6 +34,7 @@ class GameOverScene extends Phaser.Scene {
     const entry = {
       name: pname, score, kills: r.kills, timeSec, level: r.level,
       hits: r.hitsTaken, powerups: r.powerups, victory,
+      weapons: r.weapons || [], passives: r.passives || [],
       id: this._stamp(), date: this._today(),
     };
     const ranking = this._saveAndLoadRanking(entry);

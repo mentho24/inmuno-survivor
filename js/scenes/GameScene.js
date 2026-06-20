@@ -752,7 +752,7 @@ class GameScene extends Phaser.Scene {
     const evolutions = [];
     const p = this.player;
     const MAX_WEAPONS = 4;
-    const MAX_PASSIVES = 6;
+    const MAX_PASSIVES = 4;
 
     // Armas existentes que pueden subir + evoluciones disponibles
     for (const w of p.weapons) {
