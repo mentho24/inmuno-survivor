@@ -23,8 +23,10 @@ class GameScene extends Phaser.Scene {
     // Jugador
     this.player = new Player(this, 0, 0);
 
-    // Arma inicial
-    this.player.addWeapon("bolt");
+    // Arma inicial aleatoria (entre las armas base, no las evolucionadas)
+    const baseWeapons = Object.keys(WEAPONS).filter(id => !WEAPONS[id].evolved);
+    const startId = baseWeapons[Math.floor(Math.random() * baseWeapons.length)];
+    this.player.addWeapon(startId);
 
     // Cámara
     this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
@@ -223,6 +225,7 @@ class GameScene extends Phaser.Scene {
     e.xp = 40;
     e.isBoss = true;
     e.setTint(0xff3030);
+    Sfx.play("boss");
     this.flashMessage("¡CEPA VIRULENTA!", 0xff4040);
   }
 
@@ -504,6 +507,7 @@ class GameScene extends Phaser.Scene {
 
   killEnemy(enemy) {
     this.kills++;
+    Sfx.play("death");
     this.deathEmitter.setParticleTint(ENEMIES[enemy.typeKey].color);
     this.deathEmitter.emitParticleAt(enemy.x, enemy.y, 8);
 
@@ -552,6 +556,7 @@ class GameScene extends Phaser.Scene {
     const hurt = player.takeDamage(enemy.damage);
     if (hurt) {
       this.hitsTaken++;
+      Sfx.play("hurt");
       // pequeño empuje al enemigo
       enemy.knockback(player.x, player.y, 12);
     }
@@ -565,6 +570,7 @@ class GameScene extends Phaser.Scene {
       if (levels > 0) this.triggerLevelUp(levels);
     } else if (pickup.kind === "heal") {
       player.heal(pickup.value);
+      Sfx.play("heal");
       this.showDamage(player.x, player.y - 20, "+" + pickup.value, "#6fffb0");
     } else if (pickup.kind === "magnet") {
       this.collectAllGems();
@@ -580,6 +586,7 @@ class GameScene extends Phaser.Scene {
       if (g.active && g.kind === "xp") g._attracting = true;
     }
     this.cameras.main.flash(220, 120, 200, 255);
+    Sfx.play("magnet");
     this.flashMessage("¡IMÁN!", 0x9fe0ff);
   }
 
@@ -693,6 +700,7 @@ class GameScene extends Phaser.Scene {
   // ---------------- Subir de nivel ----------------
   triggerLevelUp(levels) {
     this.paused = true;
+    Sfx.play("levelup");
     this.resetJoystick();
     this.physics.pause();
     const choices = this.buildUpgradeChoices();
@@ -718,6 +726,7 @@ class GameScene extends Phaser.Scene {
     if (old.orbs) old.orbs.forEach(o => o.destroy());
     this.player.weapons.splice(idx, 1);
     this.player.addWeapon(intoId);
+    Sfx.play("evolve");
     this.flashMessage("¡EVOLUCIÓN!", 0xffd24a);
   }
 
@@ -739,6 +748,7 @@ class GameScene extends Phaser.Scene {
     const evolutions = [];
     const p = this.player;
     const MAX_WEAPONS = 6;
+    const MAX_PASSIVES = 6;
 
     // Armas existentes que pueden subir + evoluciones disponibles
     for (const w of p.weapons) {
@@ -771,14 +781,14 @@ class GameScene extends Phaser.Scene {
         }
       }
     }
-    // Pasivas
+    // Pasivas (con tope de ranuras: no se ofrecen nuevas si ya hay 6)
     for (const id in PASSIVES) {
       const def = PASSIVES[id];
       const owned = p.passives.find(pp => pp.id === id);
       const lvl = owned ? owned.level : 0;
-      if (lvl < def.maxLevel) {
-        pool.push({ kind: "passive", id, icon: def.icon, name: def.name, desc: def.desc, level: lvl + 1, isNew: !owned });
-      }
+      if (lvl >= def.maxLevel) continue;
+      if (!owned && p.passives.length >= MAX_PASSIVES) continue; // sin ranuras libres
+      pool.push({ kind: "passive", id, icon: def.icon, name: def.name, desc: def.desc, level: lvl + 1, isNew: !owned });
     }
 
     // Las evoluciones tienen prioridad: siempre se muestran primero
@@ -835,6 +845,7 @@ class GameScene extends Phaser.Scene {
     this.physics.pause();
     this.player.setVelocity(0, 0);
 
+    Sfx.play(victory ? "victory" : "gameover");
     if (victory) {
       this.flashMessage("¡INFECCIÓN ERRADICADA!", 0x6fffb0);
       this.cameras.main.flash(400, 120, 255, 180);
@@ -847,6 +858,9 @@ class GameScene extends Phaser.Scene {
       hitsTaken: this.hitsTaken,
       powerups: this.powerups,
       level: this.player.level,
+      // Loadout final del jugador (para mostrar en resultados)
+      weapons: this.player.weapons.map(w => ({ icon: WEAPONS[w.id].icon, level: w.level, evolved: !!WEAPONS[w.id].evolved })),
+      passives: this.player.passives.map(p => ({ icon: PASSIVES[p.id].icon, level: p.level })),
     };
     this.time.delayedCall(victory ? 1400 : 700, () => {
       this.scene.stop("HUDScene");

@@ -121,6 +121,39 @@ class GameOverScene extends Phaser.Scene {
       }).setOrigin(0, 0.5);
     });
 
+    // ----- Loadout: armas + mejoras usadas -----
+    const weps = r.weapons || [];
+    const pass = r.passives || [];
+    this.add.text(width / 2, 602, "TU ARSENAL", {
+      fontFamily: "Trebuchet MS", fontSize: "15px", color: "#7c89b0", fontStyle: "bold",
+    }).setOrigin(0.5);
+    const ly = 626, gap = 40, sep = 28;
+    const totalW = weps.length * gap + ((weps.length && pass.length) ? sep : 0) + pass.length * gap;
+    let lx = width / 2 - totalW / 2 + gap / 2;
+    weps.forEach(w => {
+      const img = this.add.image(lx, ly, w.icon).setScale(0.6);
+      if (w.evolved) img.setTint(0xffe89a);
+      this.add.text(lx + 12, ly + 11, "" + w.level, {
+        fontFamily: "Trebuchet MS", fontSize: "12px", color: "#ffe08a", fontStyle: "bold",
+        stroke: "#000", strokeThickness: 3,
+      }).setOrigin(0.5);
+      lx += gap;
+    });
+    if (weps.length && pass.length) {
+      this.add.text(lx - gap / 2 + sep / 2, ly, "·", {
+        fontFamily: "Trebuchet MS", fontSize: "26px", color: "#3f6bd6", fontStyle: "bold",
+      }).setOrigin(0.5);
+      lx += sep;
+    }
+    pass.forEach(pp => {
+      this.add.image(lx, ly, pp.icon).setScale(0.52);
+      this.add.text(lx + 11, ly + 10, "" + pp.level, {
+        fontFamily: "Trebuchet MS", fontSize: "11px", color: "#9fe0ff", fontStyle: "bold",
+        stroke: "#000", strokeThickness: 3,
+      }).setOrigin(0.5);
+      lx += gap;
+    });
+
     // ----- Botones -----
     const btn = this.add.text(width / 2 - 130, height - 50, "↻  JUGAR DE NUEVO", {
       fontFamily: "Trebuchet MS", fontSize: "30px", color: "#0b0d17",
@@ -177,6 +210,7 @@ class GameOverScene extends Phaser.Scene {
   }
 
   restart() {
+    Sfx.play("click");
     this.scene.start("GameScene");
     this.scene.launch("HUDScene");
   }

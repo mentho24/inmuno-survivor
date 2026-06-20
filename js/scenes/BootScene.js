@@ -18,6 +18,7 @@ class BootScene extends Phaser.Scene {
     this.makeMusicIcons();
     this.makeMisc();
     Music.init(this);
+    Sfx.init(this);
     this.scene.start("MenuScene");
   }
 

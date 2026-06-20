@@ -92,6 +92,7 @@ class LevelUpScene extends Phaser.Scene {
   }
 
   pick(choice) {
+    Sfx.play("select");
     this.gameScene.applyUpgrade(choice);
     this.remaining -= 1;
     this.scene.stop();

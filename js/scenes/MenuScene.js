@@ -123,6 +123,7 @@ class MenuScene extends Phaser.Scene {
   }
 
   startGame() {
+    Sfx.play("click");
     this.persist();
     this.scene.start("GameScene");
     this.scene.launch("HUDScene");
