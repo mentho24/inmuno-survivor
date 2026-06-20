@@ -540,7 +540,7 @@ class GameScene extends Phaser.Scene {
       h.spawnHeal(enemy.x + 20, enemy.y, 20);
     }
     // probabilidad de imán (recoge toda la XP de la pantalla al juntarlo)
-    if (Math.random() < 0.012 || enemy.isBoss) {
+    if (Math.random() < 0.004 || enemy.isBoss) {
       let m = this.pickups.getFirstDead(false);
       if (!m) { m = new Pickup(this); this.pickups.add(m); }
       m.spawnMagnet(enemy.x - 20, enemy.y);

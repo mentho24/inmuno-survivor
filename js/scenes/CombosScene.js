@@ -51,34 +51,36 @@ class CombosScene extends Phaser.Scene {
     const startY = 130;
     const rowH = (height - startY - 80) / combos.length;
 
+    const boxW = width * 0.8;
     combos.forEach((c, i) => {
       const y = startY + rowH * (i + 0.5);
-      this.add.rectangle(cx, y, width * 0.8, rowH - 8, 0x141a2e, 0.8).setStrokeStyle(2, 0xffd24a);
+      this.add.rectangle(cx, y, boxW, rowH - 8, 0x141a2e, 0.8).setStrokeStyle(2, 0xffd24a);
+      const left = cx - boxW / 2;
 
-      // Evolución (izquierda)
-      const evoIcon = this.add.image(cx - width * 0.36, y, c.evo.icon).setScale(1.0).setTint(0xffe89a);
-      this.add.text(cx - width * 0.33, y - 12, c.evo.name, {
-        fontFamily: "Trebuchet MS", fontSize: "24px", color: "#ffe08a", fontStyle: "bold",
+      // --- Evolución (izquierda) ---
+      this.add.image(left + 38, y, c.evo.icon).setScale(1.0).setTint(0xffe89a);
+      this.add.text(left + 72, y - 11, c.evo.name, {
+        fontFamily: "Trebuchet MS", fontSize: "22px", color: "#ffe08a", fontStyle: "bold",
+        wordWrap: { width: boxW * 0.40 },
       }).setOrigin(0, 0.5);
-      this.add.text(cx - width * 0.33, y + 16, c.evo.desc, {
-        fontFamily: "Trebuchet MS", fontSize: "15px", color: "#aab6d8",
+      this.add.text(left + 72, y + 14, c.evo.desc, {
+        fontFamily: "Trebuchet MS", fontSize: "14px", color: "#aab6d8",
+        wordWrap: { width: boxW * 0.42 },
       }).setOrigin(0, 0.5);
 
-      // Receta (derecha): base + pasiva
-      const rx = cx + width * 0.16;
-      this.add.image(rx, y, c.base.icon).setScale(0.8);
-      this.add.text(rx, y + 28, c.base.name, {
-        fontFamily: "Trebuchet MS", fontSize: "13px", color: "#cdd6ee", align: "center",
-        wordWrap: { width: 120 },
-      }).setOrigin(0.5, 0);
-      this.add.text(rx + 58, y - 4, "+", {
-        fontFamily: "Trebuchet MS", fontSize: "30px", color: "#ffffff", fontStyle: "bold",
-      }).setOrigin(0.5);
-      this.add.image(rx + 116, y, c.passive.icon).setScale(0.8);
-      this.add.text(rx + 116, y + 28, c.passive.name, {
-        fontFamily: "Trebuchet MS", fontSize: "13px", color: "#9fe0ff", align: "center",
-        wordWrap: { width: 120 },
-      }).setOrigin(0.5, 0);
+      // --- Receta (derecha): arma base (máx) + pasiva ---
+      const rx = cx + boxW * 0.14;
+      this.add.text(rx, y - 24, "Combina:", {
+        fontFamily: "Trebuchet MS", fontSize: "13px", color: "#7c89b0",
+      }).setOrigin(0, 0.5);
+      this.add.image(rx + 14, y - 2, c.base.icon).setScale(0.5);
+      this.add.text(rx + 36, y - 2, c.base.name + "  (máx)", {
+        fontFamily: "Trebuchet MS", fontSize: "15px", color: "#cdd6ee",
+      }).setOrigin(0, 0.5);
+      this.add.image(rx + 14, y + 20, c.passive.icon).setScale(0.5);
+      this.add.text(rx + 36, y + 20, "+ " + c.passive.name, {
+        fontFamily: "Trebuchet MS", fontSize: "15px", color: "#9fe0ff",
+      }).setOrigin(0, 0.5);
     });
 
     // Botón de cerrar arriba a la derecha (siempre alcanzable en móvil)
