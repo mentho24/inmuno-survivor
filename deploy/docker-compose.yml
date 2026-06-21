@@ -3,7 +3,12 @@ name: inmuno-survivor
 services:
   # ---------- nginx: sirve el juego + reverse-proxy a la API ----------
   web:
-    image: mentho24/inmuno-survivor:latest
+    # Se construye desde el código del repo (incluye el frontend con anti-cheat),
+    # asi el deploy se actualiza con 'git pull' sin depender de Docker Hub.
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: inmuno-web:latest
     container_name: inmuno-web
     restart: unless-stopped
     depends_on:

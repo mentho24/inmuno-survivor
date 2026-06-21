@@ -1,8 +1,15 @@
-# No incluir en la imagen (no hacen falta para servir el juego)
+# No incluir en la imagen del juego (solo se sirve index.html + js/ + music.ogg)
 .git
 .gitignore
 .dockerignore
 Dockerfile
 docker-compose.yml
+deploy
+README.md
+DOCKERHUB.md
+*.md
+*.pdf
+.env
+.env.*
 .gh_token
 *.token

@@ -293,3 +293,17 @@ const ENEMIES = {
 function xpForLevel(level) {
   return Math.floor(6 + level * 6 + Math.pow(level, 1.8));
 }
+
+// Anti-tampering: congela las definiciones para frenar la edición casual por
+// consola (p. ej. WEAPONS.bolt.base.damage = 9999). El juego copia estos valores,
+// nunca los muta, así que congelarlos es seguro.
+(function deepFreeze() {
+  function df(o) {
+    if (o && typeof o === "object" && !Object.isFrozen(o)) {
+      Object.values(o).forEach(df);
+      Object.freeze(o);
+    }
+    return o;
+  }
+  [WEAPONS, PASSIVES, ENEMIES, BASE_STATS, GAME].forEach(df);
+})();

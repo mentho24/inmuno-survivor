@@ -13,6 +13,10 @@ class GameScene extends Phaser.Scene {
     this.paused = false;
     this.timeLimit = 900000; // 15 minutos = victoria
 
+    // Anti-cheat: abrir una sesión de partida en el servidor (si hay API).
+    // El servidor verificará el tiempo real transcurrido al enviar el puntaje.
+    if (typeof Api !== "undefined") Api.startSession();
+
     const R = GAME.worldRadius;
     this.physics.world.setBounds(-R, -R, R * 2, R * 2);
 
