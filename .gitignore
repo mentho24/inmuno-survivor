@@ -10,3 +10,6 @@ deploy/.env
 .DS_Store
 Thumbs.db
 *.log
+
+# Informes / documentos locales (no subir a git)
+*.pdf
